@@ -1,0 +1,12 @@
+---
+options:
+    - name: Group 1
+      options:
+        - name: Person 1
+          number: 555-555-0001
+        - name: Person 2
+          number: 555-555-0002
+    - name: Person 3
+      number: 555-555-0003
+    - name: Person 4
+      number: 555-555-0004
