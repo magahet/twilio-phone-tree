@@ -17,7 +17,7 @@ Webapp to process Twilio webhooks and respond with an IVR phone tree defined by 
 ## Docker Hub
 
     docker pull magahet/twilio-phone-tree
-    docker run -d -p 5000:5000 -v conf:/etc/phone-tree magahet/twilio-phone-tree
+    docker run -d -p 5000:5000 -v $(pwd)/conf:/etc/phone-tree magahet/twilio-phone-tree
 
 # Usage
 
