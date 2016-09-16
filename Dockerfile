@@ -15,4 +15,4 @@ COPY conf/phone-tree-example.yaml /etc/phone-tree/phone-tree.yaml
 COPY webapp /webapp
 WORKDIR /webapp
 EXPOSE 5000
-CMD ["/usr/bin/dumb-init", "--", "gunicorn", "--workers=4", "-b 0.0.0.0:5000","wsgi:app"]
+CMD ["/usr/local/bin/dumb-init", "--", "gunicorn", "--workers=4", "-b 0.0.0.0:5000","wsgi:app"]
