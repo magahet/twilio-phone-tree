@@ -6,9 +6,9 @@ Webapp to process Twilio webhooks and respond with an IVR phone tree defined by 
 
 # Deployment
 
-1. Copy /conf/phone-tree-example.yaml to /conf/phone-tree.yaml
-2. make build (does a Docker build)
-3. make run
+    make build
+    cp /conf/phone-tree-example.yaml /conf/phone-tree.yaml
+    make prod
 
 
 # Usage
