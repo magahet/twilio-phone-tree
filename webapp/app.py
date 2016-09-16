@@ -12,25 +12,39 @@ app = flask.Flask(__name__)
 @app.route('/<string:state_encoded>', methods=['POST'])
 def gather(state_encoded=''):
     state = _decode_state(state_encoded)
+    app.logger.debug('State: %s', str(state))
     path = state.get('choices', [])
     tree = _get_tree()
-    options = tree.get('options', [])
+    app.logger.debug('Path: %s', str(path))
+
+    app.logger.debug('Tree: %s', str(tree))
+    # traverse tree based on state
     for choice in path:
-        if len(options) <= choice:
+        options = tree.get('options', [])
+        if not isinstance(choice, int):
+            continue
+        if choice not in range(len(options)):
             return _redirect_to_start()
         tree = options[choice]
-        options = tree.get('options', [])
+    app.logger.debug('Tree: %s', str(tree))
+
+    # traverse tree based on user input
     user_input = _get_user_input()
-    if user_input:
-        if len(options) <= user_input:
+    app.logger.debug('Input: %s', str(user_input))
+    if user_input is not None:
+        options = tree.get('options', [])
+        if user_input not in range(len(options)):
             return _redirect_to_start()
         tree = options[user_input]
+        path.append(user_input)
+    app.logger.debug('Tree: %s', str(tree))
+
+    # respond based on whether node is a leaf
     response = twilio.twiml.Response()
     if 'number' in tree:
         response.dial(tree.get('number'))
         return twiml(response)
     elif 'options' in tree:
-        path.append(user_input)
         state = base64.b64encode(json.dumps({'choices': path}))
         with response.gather(numDigits=1, action='/{}'.format(state), method="POST") as g:
             g.say(_generate_script(tree), loop=3)
