@@ -1,5 +1,5 @@
 build:
-	docker build -t magahet/twilio-phone-tree:latest .
+	docker build -t magahet/twilio-phone-tree .
 test:
 	docker run -i magahet/twilio-phone-tree nosetests
 dev:
