@@ -1,8 +1,10 @@
-﻿import flask
+import flask
 import twilio.twiml
+import twilio.util
 import json
 import base64
 import yaml
+import os
 
 
 app = flask.Flask(__name__)
@@ -11,6 +13,8 @@ app = flask.Flask(__name__)
 @app.route('/', methods=['POST'])
 @app.route('/<string:state_encoded>', methods=['POST'])
 def gather(state_encoded=''):
+    if not is_valid_request():
+        flask.abort(403)
     state = _decode_state(state_encoded)
     app.logger.debug('State: %s', str(state))
     path = state.get('choices', [])
@@ -79,6 +83,14 @@ def _generate_script(tree):
 def _get_tree():
     with open('/etc/phone-tree/phone-tree.yaml', 'r') as _file:
         return yaml.load(_file)
+        
+        
+def _get_setting(key):
+    if not os.path.isfile('/etc/phone-tree/settings.yaml'):
+        return None
+    with open('/etc/phone-tree/settings.yaml', 'r') as _file:
+        settings = yaml.load(_file)
+        return settings.get(key)
 
 
 def _redirect_to_start():
@@ -92,3 +104,16 @@ def twiml(resp):
     resp = flask.Response(str(resp))
     resp.headers['Content-Type'] = 'text/xml'
     return resp
+
+
+def is_valid_request():
+    auth_enabled = _get_setting('auth_enabled')
+    if not auth_enabled:
+        return True
+    auth_token = _get_setting('auth_token')
+    validator = twilio.util.RequestValidator(auth_token)
+    return validator.validate(
+        flask.request.url,
+        flask.request.form,
+        flask.request.headers.get('X-Twilio-Signature', '')
+    )
