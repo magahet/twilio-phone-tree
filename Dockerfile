@@ -12,6 +12,7 @@ RUN mkdir -p /etc/phone-tree
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
 COPY conf/phone-tree-example.yaml /etc/phone-tree/phone-tree.yaml
+COPY conf/settings-example.yaml /etc/phone-tree/settings.yaml
 COPY webapp /webapp
 WORKDIR /webapp
 EXPOSE 5000
